@@ -15,7 +15,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MyAdapter.OnItemClickHandler {
+    // 1. implements要接收的interface
+
     private RecyclerView recycler_view;
     private ArrayList<String> mData = new ArrayList<>();
     private MyAdapter adapter;
@@ -41,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
         recycler_view.addItemDecoration(
                 new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         // 將資料交給adapter
-        adapter = new MyAdapter(mData);
+        // 2. 修改Adapter建立方式，this指此Activity，因為我們已經implement所以此Activity本身就是一個OnItemClickHandler
+        adapter = new MyAdapter(mData,this);
         // 設置adapter給recycler_view
         recycler_view.setAdapter(adapter);
 
@@ -53,5 +56,15 @@ public class MainActivity extends AppCompatActivity {
                 adapter.addItem("New Item");
             }
         });
+    }
+
+    @Override
+    public void onItemClick(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    }
+    // 3. 移除事件
+    @Override
+    public void onItemRemove(int position, String text) {
+        // do something...
     }
 }

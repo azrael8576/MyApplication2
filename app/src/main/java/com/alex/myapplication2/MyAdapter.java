@@ -12,9 +12,20 @@ import android.widget.Toast;
 import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+    // 1. 建立interface，命名為OnItemClickHandler，並在裡面寫好我們要發生的事件
+    interface OnItemClickHandler{
+        // 提供onItemClick方法作為點擊事件，括號內為接受的參數
+        void onItemClick (String text);
+        // 提供onItemRemove做為移除項目的事件
+        void onItemRemove(int position,String text);
+    }
     private List<String> mData;
-    MyAdapter(List<String> data){
+    // 2. 宣告interface
+    private OnItemClickHandler mClickHandler;
+    // 3. 修改Constructor
+    MyAdapter(List<String> data,OnItemClickHandler clickHandler){
         mData = data;
+        mClickHandler = clickHandler;
     }
 
     @NonNull
@@ -42,7 +53,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // 宣告元件
         private TextView txtItem;
         private Button btnRemove;
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(final View itemView) {
             super(itemView);
             txtItem = itemView.findViewById(R.id.txtItem);
             btnRemove = itemView.findViewById(R.id.btnRemove);
@@ -51,7 +62,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(view.getContext(),"click "+getAdapterPosition(),Toast.LENGTH_LONG).show();
+                    String msg = mData.get(getAdapterPosition());
+                    // 4. 呼叫interface的method
+                    mClickHandler.onItemClick(msg);
                 }
             });
             // 點擊項目中的Button時
@@ -59,7 +72,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     // 移除項目，getAdapterPosition為點擊的項目位置
-                    removeItem(getAdapterPosition());
+                    int position = getAdapterPosition();
+                    String text = mData.get(position);
+                    // 4. 呼叫interface的method
+                    mClickHandler.onItemRemove(position, text);
                 }
             });
         }
